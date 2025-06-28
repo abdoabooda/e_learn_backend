@@ -54,6 +54,7 @@ exports.loginUser = asyncHandler(async (req, res) => {
         userName: user.userName,
         email: user.email,
         role:user.role,
+        profilePhoto:user.profilePhoto
         token
       });
     } else {
