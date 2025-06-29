@@ -13,9 +13,9 @@ const { validate } = require("../middlewares/validationMiddleware");
 
 const {videoUpload} = require("../middlewares/filesUploader")
 
-router.post("/courses/:courseId/lessons",protect,restrictToAdminInstructor,videoUpload.single("video"),validateLesson,validate,newLesson)
-
-router.get('/courses/:courseId/lessons',protect,restrictToCourseAccess,getAllLessons);
+router.route("/courses/:courseId/lessons")
+      .post(protect,restrictToAdminInstructor,videoUpload.single("video"),validateLesson,validate,newLesson)
+      .get(protect,restrictToCourseAccess,getAllLessons);
 
 router.get("/admin", protect, restrictToAdmin,getAllLessonsAdmin);
 
