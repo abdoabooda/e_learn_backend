@@ -112,6 +112,54 @@ exports.getAllLessons = asyncHandler(async (req, res) => {
     lessons
   });
 });
+
+
+/**
+ * @description  Get all lessons of all courses (Admin only)
+ * @route  GET /api/lessons/admin
+ * @access Private (Admin)
+ */
+exports.getAllLessonsAdmin = asyncHandler(async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Access denied. Admins only.' });
+  }
+
+  const lessons = await Lesson.find().sort({ createdAt: 1 });
+
+  res.status(200).json({
+    message: 'All lessons retrieved successfully',
+    lessons,
+  });
+});
+
+
+
+/**
+ * @description  Get all lessons for courses owned by the instructor
+ * @route  GET /api/lessons/instructor
+ * @access Private (Instructor)
+ */
+exports.getInstructorLessons = asyncHandler(async (req, res) => {
+  if (req.user.role !== 'instructor') {
+    return res.status(403).json({ message: 'Access denied. Instructors only.' });
+  }
+
+  // Find courses owned by instructor
+  const instructorCourses = await Course.find({ instructor: req.user._id }).select('_id');
+  const courseIds = instructorCourses.map(course => course._id);
+
+  // Get all lessons from those courses
+  const lessons = await Lesson.find({ course: { $in: courseIds } }).sort({ createdAt: 1 });
+
+  res.status(200).json({
+    message: 'Lessons for instructor retrieved successfully',
+    lessons,
+  });
+});
+
+
+
+
 /**
  * @description  Get a lesson by id
  * @route  /api/lessons/:id
