@@ -75,6 +75,25 @@ exports.getAllCourses = asyncHandler(async (req, res) => {
 })
 
 
+
+/**
+ * @description  Get all courses of an instructor
+ * @route  /api/courses/instructor
+ * @method  GET
+ * @access private (only instructor himself)
+ */
+
+
+exports.getInstructorCourses = asyncHandler(async (req, res) => {
+    const courses = await Course.find({ instructor: req.user._id });
+
+    res.status(200).json({
+        success: true,
+        courses,
+    });
+});
+
+
 /**
  * @description  Get a course by id
  * @route  /api/courses/:id
@@ -193,4 +212,63 @@ exports.deleteCourse = asyncHandler(async(req,res)=>{
 exports.getCountCoursesCtrl = asyncHandler(async(req,res)=>{
     const count = await Course.countDocuments()
     res.status(200).json(count)
+})
+
+
+
+
+
+
+/**
+ * @description  Update course image
+ * @route  /api/courses/upload-image/:id
+ * @method  PUT
+ * @access private (only admin or instructor)
+ */
+
+
+
+exports.updateCourseImageCtrl = asyncHandler(async(req,res)=>{
+    // 1. validation
+
+    if(!req.file){
+        return res.status(400).json({message : "no image provided"})
+    }
+
+    // 2. Get the post from the DB
+    const course = await Course.findById(req.params.id);
+    if(!course){
+        return res.status(404).json({message : "post not found"})
+    }
+
+
+    // 4. Remove old image
+
+    await cloudinaryRemoveFile(course.courseImg.publicId)
+
+
+    // 5. Upload new image
+
+    const imagePath = path.join(__dirname,`../images/${req.file.filename}`)
+    
+    const result = await cloudinaryUploadFile(imagePath)
+
+    // 6. Update the image field in the path 
+
+    const updatedCourse = await Course.findByIdAndUpdate(req.params.id,{
+        $set : {
+            courseImg:{
+                url : result.secure_url,
+                publicId : result.public_id
+            }
+        }
+    },{new : true})
+
+    // 7. send response to the client 
+
+    res.status(200).json(updatedCourse)
+
+    // 8. send response to the client 
+
+    fs.unlinkSync(imagePath)
 })

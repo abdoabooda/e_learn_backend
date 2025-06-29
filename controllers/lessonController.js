@@ -6,7 +6,7 @@ const Course = require("../models/Course.js")
 
 const Enrollment = require('../models/Enrollment');
 
-const {cloudinaryUploadFile} = require('../utils/cloudinary');
+const {cloudinaryUploadFile,cloudinaryRemoveFile} = require('../utils/cloudinary');
 
 const fs = require('fs');
 
@@ -227,3 +227,58 @@ exports.updateLesson = asyncHandler(async(req,res)=>{
     res.status(200).json(updatedLesson);
 })
 
+
+
+
+/**
+ * @description  Update lesson video
+ * @route  /api/lessons/upload-video/:id
+ * @method  PUT
+ * @access private (only admin or instructor)
+ */
+
+
+
+exports.updateLessonVideo = asyncHandler(async(req,res)=>{
+    // 1. validation
+
+    if(!req.file){
+        return res.status(400).json({message : "no video provided"})
+    }
+
+    // 2. Get the post from the DB
+    const lesson = await Lesson.findById(req.params.id);
+    if(!lesson){
+        return res.status(404).json({message : "post not found"})
+    }
+
+    // 4. Remove old image
+
+    await cloudinaryRemoveFile(lesson.videoUrl.publicId)
+
+
+    // 5. Upload new image
+
+    const videoPath = path.join(__dirname,`../videos/${req.file.filename}`)
+    
+    const result = await cloudinaryUploadFile(videoPath)
+
+    // 6. Update the video field in the path 
+
+    const updatedLesson = await Lesson.findByIdAndUpdate(req.params.id,{
+        $set : {
+            videoUrl:{
+                url : result.secure_url,
+                publicId : result.public_id
+            }
+        }
+    },{new : true})
+
+    // 7. send response to the client 
+
+    res.status(200).json(updatedLesson)
+
+    // 8. send response to the client 
+
+    fs.unlinkSync(videoPath)
+})
