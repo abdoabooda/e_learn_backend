@@ -23,7 +23,7 @@ router.route("/:id")
 
 
 router.route("/update-video/:id")
-      .put(protect,restrictToAdminInstructor,photoUpload.single("video"),updateLessonVideo)
+      .put(protect,restrictToAdminInstructor,videoUpload.single("video"),updateLessonVideo)
 
 
 
