@@ -8,29 +8,40 @@ const User = require("../models/User.js");
  * @access public
  */
 
-exports.registerUser = asyncHandler(async (req, res) => {
-    const { userName, email, password, role } = req.body;
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-        res.status(400);
-        throw new Error('User already exists');
-    }
-    const user = await User.create({
-        userName,
-        email,
-        password,
-        role
-      });
-    
-      if (user) {
-    
-        res.status(201).json({message : "you registred successfully, please log in"});
-      } else {
-        res.status(400);
-        throw new Error('Invalid user data');
-      }
+exports.registerUser = asyncHandler(async (req, res) => {
+  const { userName, email, password, role } = req.body;
+
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    res.status(400);
+    throw new Error('User already exists');
+  }
+
+  const user = await User.create({
+    userName,
+    email,
+    password,
+    role,
+  });
+
+  if (user) {
+    const token = user.generateAuthToken();
+
+    res.status(201).json({
+      message: 'You registered successfully',
+      _id: user._id,
+      userName: user.userName,
+      email: user.email,
+      role: user.role,
+      profilePhoto: user.profilePhoto,
+      token,
     });
+  } else {
+    res.status(400);
+    throw new Error('Invalid user data');
+  }
+});
 
 
 
