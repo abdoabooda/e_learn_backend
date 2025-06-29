@@ -126,3 +126,28 @@ exports.restrictToCourseAccess = asyncHandler(async (req, res, next) => {
 
 
 
+// middleware/authMiddleware.js
+
+exports.restrictToAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Admins only.',
+    });
+  }
+  next();
+};
+
+
+
+// middleware/authMiddleware.js
+
+exports.restrictToInstructor = (req, res, next) => {
+  if (!req.user || req.user.role !== 'instructor') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Instructors only.',
+    });
+  }
+  next();
+};

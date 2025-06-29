@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const {protect,restrictToAdminInstructor,restrictToCourseAccess} = require("../middlewares/authMiddleware");
+const {protect,restrictToAdminInstructor,restrictToCourseAccess,restrictToAdmin,restrictToInstructor} = require("../middlewares/authMiddleware");
 
 const { newLesson , getAllLessons ,getLesson ,updateLesson ,deleteLesson
       ,updateLessonVideo, getAllLessonsAdmin, getInstructorLessons,} = require("../controllers/lessonController");
@@ -27,8 +27,8 @@ router.route("/update-video/:id")
       .put(protect,restrictToAdminInstructor,videoUpload.single("video"),updateLessonVideo)
 
 
-router.get("/admin", protect, restrictToAdminInstructor,getAllLessonsAdmin);
-router.get("/instructor", protect, restrictToAdminInstructor,getInstructorLessons);
+router.get("/admin", protect, restrictToAdmin,getAllLessonsAdmin);
+router.get("/instructor", protect, restrictToInstructor,getInstructorLessons);
 
 
 
