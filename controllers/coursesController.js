@@ -228,7 +228,7 @@ exports.getCountCoursesCtrl = asyncHandler(async(req,res)=>{
 
 
 
-exports.updateCourseImageCtrl = asyncHandler(async(req,res)=>{
+exports.updateCourseImage = asyncHandler(async(req,res)=>{
     // 1. validation
 
     if(!req.file){

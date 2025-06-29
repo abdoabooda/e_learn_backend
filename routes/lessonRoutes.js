@@ -4,7 +4,7 @@ const router = express.Router();
 
 const {protect,restrictToAdminInstructor,restrictToCourseAccess} = require("../middlewares/authMiddleware");
 
-const { newLesson , getAllLessons ,getLesson ,updateLesson ,deleteLesson} = require("../controllers/lessonController");
+const { newLesson , getAllLessons ,getLesson ,updateLesson ,deleteLesson,updateLessonVideo} = require("../controllers/lessonController");
 
 const {validateLesson} = require("../utils/validators/lessonValidator")
 
@@ -20,6 +20,12 @@ router.route("/:id")
       .get(protect,restrictToCourseAccess,getLesson)
       .put(protect,restrictToAdminInstructor,validateLesson,validate,updateLesson)
       .delete(protect,restrictToAdminInstructor,deleteLesson)
+
+
+router.route("/update-video/:id")
+      .put(protect,restrictToAdminInstructor,photoUpload.single("video"),updateLessonVideo)
+
+
 
 module.exports = router
 
