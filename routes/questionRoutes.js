@@ -13,7 +13,7 @@ const { validate } = require("../middlewares/validationMiddleware");
 
 
 router.post(
-  '/quizzes/:quizId/questions',
+  '/',
   protect,
   restrictToAdminInstructor,
   validateQuestion,

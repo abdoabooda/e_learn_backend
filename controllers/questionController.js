@@ -6,14 +6,14 @@ const Course = require('../models/Course');
 
 /**
  * @desc    Create a new question
- * @route   /api/questions/quizzes/:quizId/questions
+ * @route   /api/questions/
  * @method  POST 
  * @access  Private (instructor, admin)
  */
 
 exports.createQuestion = asyncHandler(async (req, res) => {
-  const { quizId } = req.params;
-  const { name, options, correctAnswer } = req.body;
+  
+  const { name, options, correctAnswer,quizId } = req.body;
 
   // Validate quiz existence
   const quiz = await Quiz.findById(quizId).populate('course');
