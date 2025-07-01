@@ -211,10 +211,10 @@ exports.getInstructorStats = asyncHandler(async (req, res) => {
   const completionRate = enrollments.length > 0
     ? Math.round((enrollments.filter(e => e.progress >= 100).length / enrollments.length) * 100)
     : 0;
-  const revenue = enrollments.reduce((sum, e) => sum + (e.coursePrice || 0), 0);
+  const revenue = enrollments.reduce((sum, e) => sum + (e.course.price || 0), 0);
   const activeQuizzes = quizzes.length;
   const avgRating = courses.length > 0
-    ? (courses.reduce((sum, c) => sum + (c.rating || 0), 0) / courses.length).toFixed(1)
+    ? (courses.reduce((sum, c) => sum + (c.ratings || 0), 0) / courses.length).toFixed(1)
     : 0;
 
   const recentActivity = enrollments
@@ -262,7 +262,7 @@ exports.getInstructorCourses = asyncHandler(async (req, res) => {
     title: c.title,
     level: c.level,
     duration: c.duration,
-    enrolledStudents: c.enrolledStudents || 0,
+    enrolledStudents: c.enrolledStudents.length || 0,
     price: c.price || 0,
     status: c.status || 'Active'
   })));
