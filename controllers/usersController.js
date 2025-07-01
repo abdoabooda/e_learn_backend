@@ -5,6 +5,10 @@ const path = require("path");
 const fs = require("fs");
 const Enrollment = require('../models/Enrollment');
 const bcrypt = require('bcryptjs')
+const Course = require('../models/Course');
+const Quiz = require('../models/Quiz');
+
+
 /**
  * @description  Get All Users
  * @route  /api/users/profile
@@ -140,7 +144,12 @@ exports.getCountUsersCtrl = asyncHandler(async(req,res)=>{
 
 
 
-
+/**
+ * @description  Get Student's stats
+ * @route  /api/users/profile/dashboard/performance
+ * @method  GET
+ * @access private (logged in user)
+ */
 
 
 
@@ -178,6 +187,92 @@ exports.getStudentPerformance = asyncHandler(async (req, res) => {
 
   res.json(data);
 });
+
+
+
+/**
+ * @description  Get Instructor stats
+ * @route  /api/users/dashboard/instructor
+ * @method  GET
+ * @access private (only instructor)
+ */
+
+exports.getInstructorStats = asyncHandler(async (req, res) => {
+  const instructorId = req.user._id;
+
+  const [courses, enrollments, quizzes] = await Promise.all([
+    Course.find({ instructor: instructorId }).lean(),
+    Enrollment.find({ course: { $in: await Course.find({ instructor: instructorId }).distinct('_id') } }).lean(),
+    Quiz.find({ course: { $in: await Course.find({ instructor: instructorId }).distinct('_id') } }).lean()
+  ]);
+
+  const totalCourses = courses.length;
+  const totalStudents = enrollments.length;
+  const completionRate = enrollments.length > 0
+    ? Math.round((enrollments.filter(e => e.progress >= 100).length / enrollments.length) * 100)
+    : 0;
+  const revenue = enrollments.reduce((sum, e) => sum + (e.coursePrice || 0), 0);
+  const activeQuizzes = quizzes.length;
+  const avgRating = courses.length > 0
+    ? (courses.reduce((sum, c) => sum + (c.rating || 0), 0) / courses.length).toFixed(1)
+    : 0;
+
+  const recentActivity = enrollments
+    .slice(0, 5)
+    .map((e, index) => ({
+      id: index + 1,
+      type: e.progress >= 100 ? 'completion' : 'enrollment',
+      description: `${e.userName || 'Student'} ${e.progress >= 100 ? 'completed' : 'enrolled in'} ${e.courseTitle || 'a course'}`,
+      timestamp: e.createdAt || new Date()
+    }))
+    .concat(
+      quizzes.slice(0, 3).map((q, index) => ({
+        id: enrollments.length + index + 1,
+        type: 'quiz_submission',
+        description: `New submission for quiz "${q.title}"`,
+        timestamp: q.createdAt || new Date()
+      }))
+    );
+
+  res.json({
+    totalCourses,
+    totalStudents,
+    completionRate,
+    revenue,
+    recentActivity,
+    activeQuizzes,
+    avgRating
+  });
+});
+
+
+/**
+ * @description  Get instructor courses
+ * @route  /api/users/instructor/courses
+ * @method  GET
+ * @access private (only instructor)
+ */
+
+exports.getInstructorCourses = asyncHandler(async (req, res) => {
+  const courses = await Course.find({ instructor: req.user._id })
+    .select('title level duration enrolledStudents price status')
+    .lean();
+  res.json(courses.map(c => ({
+    id: c._id,
+    title: c.title,
+    level: c.level,
+    duration: c.duration,
+    enrolledStudents: c.enrolledStudents || 0,
+    price: c.price || 0,
+    status: c.status || 'Active'
+  })));
+});
+
+
+
+
+
+
 
 
 

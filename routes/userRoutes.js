@@ -1,6 +1,6 @@
 const router = require("express").Router()
 
-const { getAllUsers, getUser, updateUser, profilePhotoUpload,getCountUsersCtrl,getStudentPerformance } = require("../controllers/usersController.js")
+const { getAllUsers, getUser, updateUser, profilePhotoUpload,getCountUsersCtrl,getStudentPerformance,getInstructorStats,getInstructorCourses } = require("../controllers/usersController.js")
 const {protect,restrictToAdminInstructor,restrictToSelf} = require("../middlewares/authMiddleware.js")
 const validateObjectId = require("../middlewares/validateObjectId")
 const {photoUpload} = require("../middlewares/filesUploader.js")
@@ -26,7 +26,9 @@ router.route("/count").get(protect,restrictToAdminInstructor,getCountUsersCtrl)
 
 router.get("/profile/dashboard/performance", protect, getStudentPerformance)
 
+router.get("/dashboard/instructor", protect, getStudentPerformance)
 
+router.get("/instructor/courses", protect, getStudentPerformance)
 
 
 
