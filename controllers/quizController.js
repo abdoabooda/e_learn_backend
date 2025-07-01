@@ -71,7 +71,9 @@ exports.getAllQuizzes = asyncHandler(async(req,res)=>{
       return res.status(403).json({ message: 'Not authorized to view lessons for this course' });
     }
 
-  const quizzes = await Quiz.find({ course: courseId }).populate('title').sort({ createdAt: 1 });
+  const quizzes = await Quiz.find({ course: courseId }).populate('title')
+                                                       .populate('questions')
+                                                       .sort({ createdAt: 1 });
 
   res.status(200).json({
     message: 'Quizzes retrieved successfully',
