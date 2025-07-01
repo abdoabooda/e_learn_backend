@@ -222,7 +222,7 @@ exports.getInstructorStats = asyncHandler(async (req, res) => {
     .map((e, index) => ({
       id: index + 1,
       type: e.progress >= 100 ? 'completion' : 'enrollment',
-      description: `${e.userName || 'Student'} ${e.progress >= 100 ? 'completed' : 'enrolled in'} ${e.courseTitle || 'a course'}`,
+      description: `${e.user.userName || 'Student'} ${e.progress >= 100 ? 'completed' : 'enrolled in'} ${e.course.title || 'a course'}`,
       timestamp: e.createdAt || new Date()
     }))
     .concat(
