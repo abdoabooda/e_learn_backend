@@ -26,9 +26,9 @@ router.route("/count").get(protect,restrictToAdminInstructor,getCountUsersCtrl)
 
 router.get("/profile/dashboard/performance", protect, getStudentPerformance)
 
-router.get("/dashboard/instructor", protect, getStudentPerformance)
+router.get("/dashboard/instructor", protect, getInstructorStats)
 
-router.get("/instructor/courses", protect, getStudentPerformance)
+router.get("/instructor/courses", protect, getInstructorCourses)
 
 
 
