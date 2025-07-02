@@ -169,11 +169,12 @@ exports.updateQuiz = asyncHandler(async(req,res)=>{
 
     // 3. update quiz
 
-    const updatedQuiz = await Course.findByIdAndUpdate(req.params.id,{
+    const updatedQuiz = await Quiz.findByIdAndUpdate(req.params.id,{
         $set : {
             title : req.body.title,
             passingScore : req.body.passingScore,
-            duration: req.body.duration
+            duration: req.body.duration,
+            course:req.body.course
 
         }
     },{new : true})
