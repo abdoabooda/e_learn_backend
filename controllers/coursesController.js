@@ -249,7 +249,7 @@ exports.updateCourseImage = asyncHandler(async(req,res)=>{
 
     // 5. Upload new image
 
-    const imagePath = path.join(__dirname,`../images/${req.file.filename}`)
+    const imagePath = path.join(__dirname,`../upload/images/${req.file.filename}`)
     
     const result = await cloudinaryUploadFile(imagePath)
 
@@ -259,7 +259,7 @@ exports.updateCourseImage = asyncHandler(async(req,res)=>{
         $set : {
             courseImg:{
                 url : result.secure_url,
-                publicId : result.public_id
+                public_id : result.public_id
             }
         }
     },{new : true})

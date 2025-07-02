@@ -307,7 +307,7 @@ exports.updateLessonVideo = asyncHandler(async(req,res)=>{
 
     // 5. Upload new image
 
-    const videoPath = path.join(__dirname,`../videos/${req.file.filename}`)
+    const videoPath = path.join(__dirname,`../upload/videos/${req.file.filename}`)
     
     const result = await cloudinaryUploadFile(videoPath)
 
