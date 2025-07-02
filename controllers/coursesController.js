@@ -235,16 +235,16 @@ exports.updateCourseImage = asyncHandler(async(req,res)=>{
         return res.status(400).json({message : "no image provided"})
     }
 
-    // 2. Get the post from the DB
+    // 2. Get the course from the DB
     const course = await Course.findById(req.params.id);
     if(!course){
-        return res.status(404).json({message : "post not found"})
+        return res.status(404).json({message : "course not found"})
     }
 
 
     // 4. Remove old image
 
-    await cloudinaryRemoveFile(course.courseImg.publicId)
+    await cloudinaryRemoveFile(course.courseImg.public_id)
 
 
     // 5. Upload new image
