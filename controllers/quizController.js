@@ -174,7 +174,6 @@ exports.updateQuiz = asyncHandler(async(req,res)=>{
             title : req.body.title,
             passingScore : req.body.passingScore,
             duration: req.body.duration,
-            course:req.body.course
 
         }
     },{new : true})
